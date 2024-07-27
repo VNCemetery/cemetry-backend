@@ -52,4 +52,5 @@ application:
 
 springdoc:
   swagger-ui:
-    url: /swagger-ui.html
+    operations-sorter: method
+    path: /
