@@ -14,7 +14,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class ErrorResponse {
-    private String code;
+    private int code;
     private String message;
     private String description;
     private List<String> errors;
