@@ -10,7 +10,6 @@ spring:
     console:
       enabled: true
   jpa:
-    database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
     show-sql: false
     hibernate:
@@ -18,14 +17,16 @@ spring:
     properties:
       hibernate:
         format_sql: false
+        dialect: org.hibernate.dialect.MariaDBDialect
   flyway:
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
     driver-class-name: ${spring.datasource.driver-class-name}
-    baselineOnMigrate: false
+    baselineOnMigrate: true
     baselineVersion: 0
     locations: classpath:db/migration
+
 
 logging:
   level:
@@ -47,4 +48,9 @@ application:
     accessToken:
       expiration: 86400
     refreshToken:
-        expiration: 2592000
+      expiration: 2592000
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    path: /

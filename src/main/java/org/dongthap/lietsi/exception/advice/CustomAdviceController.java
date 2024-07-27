@@ -34,7 +34,7 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> badRequest(BadRequestException e) {
         logger.error(e.getMessage(), e.getCause());
         ErrorResponse error = ErrorResponse.builder()
-                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .code(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .description(e.getMessage())
@@ -53,7 +53,7 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
         ErrorResponse error = ErrorResponse.builder()
-                .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                .code(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .description(e.getMessage())
@@ -66,7 +66,7 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> unauthorizedRequest(UnauthorizedException e) {
         logger.error(e.getMessage(), e.getCause());
         ErrorResponse error = ErrorResponse.builder()
-                .code(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
+                .code(HttpStatus.UNAUTHORIZED.value())
                 .timestamp(LocalDateTime.now())
                 .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .description(e.getMessage())
@@ -78,7 +78,7 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> badCredentials(BadCredentialsException e) {
         logger.error(e.getMessage(), e.getCause());
         ErrorResponse error = ErrorResponse.builder()
-                .code(String.valueOf(HttpStatus.UNAUTHORIZED.value()))
+                .code(HttpStatus.UNAUTHORIZED.value())
                 .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
                 .timestamp(LocalDateTime.now())
                 .description(e.getMessage())
@@ -90,7 +90,7 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> ex(Exception e) {
         logger.error(e.getMessage(), e.getCause());
         ErrorResponse error = ErrorResponse.builder()
-                .code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .timestamp(LocalDateTime.now())
                 .description(e.getMessage())
