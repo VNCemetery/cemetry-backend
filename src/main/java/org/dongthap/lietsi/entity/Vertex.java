@@ -2,9 +2,11 @@ package org.dongthap.lietsi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.dongthap.lietsi.constant.DbConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
@@ -20,11 +22,8 @@ public class Vertex {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "coordinate_id")
-    private Coordinate coordinate;
-
-    @ManyToMany(mappedBy = "vertices", fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
-    private Set<Cell> cells;
+    @Column(name = "latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
+    private BigDecimal latitude;
+    @Column(name = "longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
+    private BigDecimal longitude;
 }
