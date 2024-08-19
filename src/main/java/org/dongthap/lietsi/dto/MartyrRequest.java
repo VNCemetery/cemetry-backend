@@ -1,6 +1,5 @@
 package org.dongthap.lietsi.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -9,11 +8,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MartyrDto {
+public class MartyrRequest {
     private Long id;
-    private String areaName;
-    private String rowName;
-
     private String image;
     private String fullName;
     private String name;
@@ -24,7 +20,11 @@ public class MartyrDto {
     private String rankPositionUnit;
     private String homeTown;
     private String placeOfExhumation;
+    private String dieuChinh;
+    private String quyTap;
+    private String ngayThangNam;
     private String note;
     private String commune;
     private String district;
+    private Long graveRowId;
 }

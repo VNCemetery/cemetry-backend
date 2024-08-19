@@ -19,11 +19,13 @@ import java.util.Set;
 @Table(name = "vertices")
 public class Vertex {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
     private BigDecimal latitude;
     @Column(name = "longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
     private BigDecimal longitude;
+
+    @ManyToMany(mappedBy = "vertices")
+    private Set<Cell> cells;
 }

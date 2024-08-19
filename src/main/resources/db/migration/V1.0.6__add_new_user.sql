@@ -1,0 +1,2 @@
+INSERT IGNORE INTO `users` (`id`, `username`, `password`, `email`, `created_at`, `updated_at`) VALUES
+    (1, 'admin', '$2a$10$Zqt.CCFTkz/AUWvT4mmiyurEdUZoKUi.b4pLVkj4atqsNuUIWpwJu', 'locn562836@gmail.com', '2024-08-19 20:38:53', '2024-08-19 20:38:53');

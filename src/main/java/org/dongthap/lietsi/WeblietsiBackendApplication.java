@@ -17,7 +17,6 @@ public class WeblietsiBackendApplication {
     @Bean
     CommandLineRunner runner(UserService userService, MigrateService migrateService) {
         return args -> {
-//            userService.creatingTestingData();
 //            migrateService.migrateMartyr();
         };
     }

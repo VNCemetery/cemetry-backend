@@ -66,12 +66,19 @@ public class MigrateService {
                 // martyr grave
                 MartyrGrave martyrGrave;
                 if (j == 0) {
+                    String fullName = StringUtils.trimToEmpty(formatter.formatCellValue(row.getCell(3)));
+                    String name = StringUtils.trimToEmpty(formatter.formatCellValue(row.getCell(4)));
+                    if (StringUtils.isEmpty(name)) {
+                        String[] split = fullName.split(" ");
+                        name = split[split.length - 1];
+                    }
+                    String codeName = StringUtils.trimToEmpty(formatter.formatCellValue(row.getCell(5)));
                     martyrGrave = MartyrGrave.builder()
                             .graveRow(graveRow)
                             .id((long) row.getCell(2).getNumericCellValue())
-                            .fullName(formatter.formatCellValue(row.getCell(3)))
-                            .name(formatter.formatCellValue(row.getCell(4)))
-                            .codeName(formatter.formatCellValue(row.getCell(5)))
+                            .fullName(fullName)
+                            .name(name)
+                            .codeName(codeName)
                             .yearOfBirth(formatter.formatCellValue(row.getCell(6)))
                             .dateOfEnlistment(formatter.formatCellValue(row.getCell(7)))
                             .dateOfDeath(formatter.formatCellValue(row.getCell(8)))

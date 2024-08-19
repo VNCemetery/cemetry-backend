@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 })
 public class GraveRow extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "area_name")
