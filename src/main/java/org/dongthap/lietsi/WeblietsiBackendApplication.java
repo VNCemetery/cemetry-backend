@@ -1,5 +1,6 @@
 package org.dongthap.lietsi;
 
+import org.dongthap.lietsi.service.MigrateService;
 import org.dongthap.lietsi.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,9 +15,9 @@ public class WeblietsiBackendApplication {
     }
 
     @Bean
-    CommandLineRunner runner(UserService userService) {
+    CommandLineRunner runner(UserService userService, MigrateService migrateService) {
         return args -> {
-            userService.creatingTestingData();
+//            migrateService.migrateMartyr();
         };
     }
 }

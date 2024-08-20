@@ -2,11 +2,10 @@ package org.dongthap.lietsi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-import static org.dongthap.lietsi.constant.AppConstant.CODE_EXPIRED;
+import static org.dongthap.lietsi.constant.AppConstants.CODE_EXPIRED;
 
 @Data
 @NoArgsConstructor
