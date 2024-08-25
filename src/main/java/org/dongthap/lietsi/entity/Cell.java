@@ -2,6 +2,7 @@ package org.dongthap.lietsi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import java.util.Set;
 
@@ -17,11 +18,12 @@ public class Cell {
     @Id
     private Long id;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "cell_vertices",
             joinColumns = @JoinColumn(name = "cell_id"),
             inverseJoinColumns = @JoinColumn(name = "vertex_id")
     )
+    @Fetch(org.hibernate.annotations.FetchMode.JOIN)
     private Set<Vertex> vertices;
 }
