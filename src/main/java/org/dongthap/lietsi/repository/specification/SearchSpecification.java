@@ -28,7 +28,7 @@ public class SearchSpecification<T> implements Specification<T> {
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         Predicate predicate;
-        if ("search_or".equals(this.request.getSearchType())) {
+        if ("search_or".equalsIgnoreCase(this.request.getSearchType())) {
             predicate = criteriaBuilder.disjunction();
         } else {
             predicate = criteriaBuilder.equal(criteriaBuilder.literal(Boolean.TRUE), Boolean.TRUE);
