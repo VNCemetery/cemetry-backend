@@ -1,5 +1,6 @@
 package org.dongthap.lietsi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dongthap.lietsi.constant.DbConstants;
@@ -30,15 +31,16 @@ public class GraveRow extends BaseEntity {
     @Column(name = "row_name")
     private String rowName;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vertex1_id")
+    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
+    private Vertex vertex1;
 
-    @Column(name = "left_latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal leftLatitude;
-    @Column(name = "left_longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal leftLongitude;
-
-    @Column(name = "right_latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal rightLatitude;
-    @Column(name = "right_longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal rightLongitude;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vertex2_id")
+    @Fetch(FetchMode.JOIN)
+    @JsonIgnore
+    private Vertex vertex2;
 
 }

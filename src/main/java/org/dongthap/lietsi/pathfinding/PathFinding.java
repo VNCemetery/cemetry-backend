@@ -5,6 +5,7 @@ import org.dongthap.lietsi.entity.Cell;
 import org.dongthap.lietsi.entity.Edge;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class PathFinding {
+    private Map<Long, Cell> cellMap;
     private Set<Cell> cells;
     private List<Edge> edges;
 }

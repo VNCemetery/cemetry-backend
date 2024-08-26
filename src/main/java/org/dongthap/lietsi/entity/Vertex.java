@@ -1,5 +1,6 @@
 package org.dongthap.lietsi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dongthap.lietsi.constant.DbConstants;
@@ -22,10 +23,7 @@ public class Vertex {
     private Long id;
 
     @Column(name = "latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal latitude;
+    private Double latitude;
     @Column(name = "longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private BigDecimal longitude;
-
-    @ManyToMany(mappedBy = "vertices")
-    private Set<Cell> cells;
+    private Double longitude;
 }

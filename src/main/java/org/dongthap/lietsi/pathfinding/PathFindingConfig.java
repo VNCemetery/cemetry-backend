@@ -1,23 +1,28 @@
 package org.dongthap.lietsi.pathfinding;
 
 import lombok.RequiredArgsConstructor;
+import org.dongthap.lietsi.entity.Cell;
 import org.dongthap.lietsi.repository.CellRepository;
 import org.dongthap.lietsi.repository.EdgeRepository;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-@Component
+@Configuration
 @RequiredArgsConstructor
 public class PathFindingConfig {
-    private final EdgeRepository edgeRepository;
-    private final CellRepository cellRepository;
-
     @Bean
-    public PathFinding pathFinding() {
+    public PathFinding pathFinding(EdgeRepository edgeRepository, CellRepository cellRepository) {
+        Set<Cell> cells = new HashSet<>(cellRepository.findAll());
         return PathFinding.builder()
-                .cells(new HashSet<>(cellRepository.findAll()))
+                .cells(cells)
+                .cellMap(cellRepository.findAll().stream()
+                        .collect(Collectors.toMap(Cell::getId, Function.identity())))
                 .edges(edgeRepository.findAll())
                 .build();
     }

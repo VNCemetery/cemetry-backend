@@ -12,4 +12,5 @@ public class GridConstants {
     public static final double SE_LNG = 105.645211894510;
     public static final double SW_LAT = 10.462264000000;
     public static final double SW_LNG = 105.644488000000;
+    public static final int GRID_SIZE = 16;
 }
