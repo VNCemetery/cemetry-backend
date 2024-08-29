@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.dongthap.lietsi.dto.path.PathFindingRequest;
 import org.dongthap.lietsi.entity.Edge;
+import org.dongthap.lietsi.entity.Vertex;
 import org.dongthap.lietsi.service.PathFindingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class PathFindingController {
     private final PathFindingService pathFindingService;
 
     @PostMapping
-    public ResponseEntity<List<Edge>> pathFinding(@Valid @RequestBody PathFindingRequest pathFindingRequest) {
+    public ResponseEntity<List<Vertex>> pathFinding(@Valid @RequestBody PathFindingRequest pathFindingRequest) {
         return ResponseEntity.ok(pathFindingService.findPath(pathFindingRequest));
     }
 }
