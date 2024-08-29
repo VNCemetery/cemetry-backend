@@ -1,11 +1,11 @@
 package org.dongthap.lietsi.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.dongthap.lietsi.dto.path.CurrentLocation;
 import org.dongthap.lietsi.dto.path.PathFindingRequest;
 import org.dongthap.lietsi.entity.Cell;
 import org.dongthap.lietsi.entity.Edge;
 import org.dongthap.lietsi.entity.GraveRow;
+import org.dongthap.lietsi.entity.Vertex;
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.pathfinding.PathFinding;
 import org.dongthap.lietsi.repository.GraveRowRepository;
@@ -24,7 +24,7 @@ public class PathFindingServiceImpl implements PathFindingService {
     private GraveRowRepository graveRowRepository;
 
     @Override
-    public List<Edge> findPath(PathFindingRequest pathFindingRequest) {
+    public List<Vertex> findPath(PathFindingRequest pathFindingRequest) {
         GraveRow graveRow = graveRowRepository.findById(pathFindingRequest.getGraveRowId())
                 .orElseThrow(() -> BadRequestException.message("Không tìm thấy hàng mộ"));
 
