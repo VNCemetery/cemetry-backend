@@ -2,6 +2,7 @@ package org.dongthap.lietsi.controller.api;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org.dongthap.lietsi.model.dto.MartyrDto;
 import org.dongthap.lietsi.model.dto.MartyrRequest;
 import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
@@ -45,7 +46,7 @@ public class MartyrController {
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(implementation = MartyrSearchRequest.class),
-            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+            examples = @ExampleObject(
                 name = "Basic Search",
                 summary = "Search for martyrs by name",
                 value = """
