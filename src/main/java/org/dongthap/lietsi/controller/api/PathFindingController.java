@@ -2,9 +2,8 @@ package org.dongthap.lietsi.controller.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.dto.path.PathFindingRequest;
-import org.dongthap.lietsi.entity.Edge;
-import org.dongthap.lietsi.entity.Vertex;
+import org.dongthap.lietsi.model.dto.path.PathFindingRequest;
+import org.dongthap.lietsi.model.entity.Vertex;
 import org.dongthap.lietsi.service.PathFindingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

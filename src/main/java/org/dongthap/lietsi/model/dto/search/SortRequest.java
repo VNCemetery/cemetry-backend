@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.dto.search;
+package org.dongthap.lietsi.model.dto.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;

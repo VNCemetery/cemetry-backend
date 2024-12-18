@@ -1,8 +1,8 @@
 package org.dongthap.lietsi.pathfinding;
 
 import lombok.*;
-import org.dongthap.lietsi.entity.Cell;
-import org.dongthap.lietsi.entity.Edge;
+import org.dongthap.lietsi.model.entity.Cell;
+import org.dongthap.lietsi.model.entity.Edge;
 
 import java.util.List;
 import java.util.Map;

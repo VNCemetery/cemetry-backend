@@ -1,8 +1,8 @@
-package org.dongthap.lietsi.entity;
+package org.dongthap.lietsi.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dongthap.lietsi.entity.common.BaseEntity;
+import org.dongthap.lietsi.model.entity.common.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.SoftDelete;
 
@@ -14,7 +14,11 @@ import org.hibernate.annotations.SoftDelete;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "martyr_graves")
+@Table(name = "martyr_graves", indexes = {
+        @Index(name = "index_martyr_graves_full_name", columnList = "full_name"),
+        @Index(name = "index_martyr_graves_name", columnList = "name"),
+        @Index(name = "index_martyr_graves_code_name", columnList = "code_name")
+})
 @SoftDelete
 public class MartyrGrave extends BaseEntity {
     @Id

@@ -3,13 +3,12 @@ package org.dongthap.lietsi.repository.specification;
 import jakarta.persistence.criteria.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dongthap.lietsi.dto.search.FilterRequest;
-import org.dongthap.lietsi.dto.search.SearchRequest;
-import org.dongthap.lietsi.dto.search.SortRequest;
+import org.dongthap.lietsi.model.dto.search.FilterRequest;
+import org.dongthap.lietsi.model.dto.search.SearchRequest;
+import org.dongthap.lietsi.model.dto.search.SortRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;

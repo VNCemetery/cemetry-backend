@@ -1,14 +1,11 @@
-package org.dongthap.lietsi.entity;
+package org.dongthap.lietsi.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.dongthap.lietsi.constant.DbConstants;
-import org.dongthap.lietsi.entity.common.BaseEntity;
+import org.dongthap.lietsi.model.entity.common.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
-import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.dto.search;
+package org.dongthap.lietsi.model.dto.search;
 
 import lombok.*;
 
@@ -9,7 +9,6 @@ import java.util.Objects;
 @Data
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRequest {

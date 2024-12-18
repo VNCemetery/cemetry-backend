@@ -1,22 +1,26 @@
 package org.dongthap.lietsi.service.impl;
 
-import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.dto.MartyrDto;
-import org.dongthap.lietsi.dto.MartyrRequest;
-import org.dongthap.lietsi.dto.search.SearchRequest;
-import org.dongthap.lietsi.entity.GraveRow;
-import org.dongthap.lietsi.entity.MartyrGrave;
+import java.util.List;
+import java.util.Optional;
+
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.mapper.MartyrMapper;
+import org.dongthap.lietsi.model.dto.MartyrDto;
+import org.dongthap.lietsi.model.dto.MartyrRequest;
+import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
+import org.dongthap.lietsi.model.entity.GraveRow;
+import org.dongthap.lietsi.model.entity.MartyrGrave;
 import org.dongthap.lietsi.repository.GraveRowRepository;
 import org.dongthap.lietsi.repository.MartyrRepository;
 import org.dongthap.lietsi.repository.specification.SearchSpecification;
 import org.dongthap.lietsi.service.MartyrService;
 import org.dongthap.lietsi.util.CommonUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import jakarta.persistence.criteria.Predicate;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +34,23 @@ public class MartyrServiceImpl implements MartyrService {
     }
 
     @Override
-    public List<MartyrDto> search(SearchRequest searchRequest) {
+    public List<MartyrDto> search(MartyrSearchRequest searchRequest) {
         SearchSpecification<MartyrGrave> searchSpecification = new SearchSpecification<>(searchRequest);
+
+        Specification<MartyrGrave> nameSpec = Optional.ofNullable(searchRequest.getName())
+                .map(name -> (Specification<MartyrGrave>) (root, query, cb) -> {
+                    String nameLike = "%" + name.toLowerCase() + "%";
+                    Predicate fullNameSpec = cb.like(cb.lower(root.get("fullName")), nameLike);
+                    Predicate codeNameSpec = cb.like(cb.lower(root.get("codeName")), nameLike);
+                    Predicate nameSpec1 = cb.like(cb.lower(root.get("name")), nameLike);
+                    return cb.or(fullNameSpec, codeNameSpec, nameSpec1);
+                })
+                .orElse(null);
+
+        Specification<MartyrGrave> finalSpec = searchSpecification.and(nameSpec);
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(),
                 searchRequest.getSize());
-        return MartyrMapper.INSTANCE.toDtoList(martyrRepository.findAll(searchSpecification, pageable).getContent());
+        return MartyrMapper.INSTANCE.toDtoList(martyrRepository.findAll(finalSpec, pageable).getContent());
     }
 
     @Override

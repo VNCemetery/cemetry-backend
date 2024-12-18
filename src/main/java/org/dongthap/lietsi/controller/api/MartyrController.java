@@ -7,9 +7,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.dto.MartyrDto;
-import org.dongthap.lietsi.dto.MartyrRequest;
-import org.dongthap.lietsi.dto.search.SearchRequest;
+import org.dongthap.lietsi.model.dto.MartyrDto;
+import org.dongthap.lietsi.model.dto.MartyrRequest;
+import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
 import org.dongthap.lietsi.service.MartyrService;
 import org.dongthap.lietsi.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class MartyrController {
                     content = @Content)
     })
     @PostMapping("/search")
-    public ResponseEntity<List<MartyrDto>> search(@RequestBody SearchRequest searchRequest) {
+    public ResponseEntity<List<MartyrDto>> search(@RequestBody MartyrSearchRequest searchRequest) {
         return ResponseEntity.ok(martyrService.search(searchRequest));
     }
 

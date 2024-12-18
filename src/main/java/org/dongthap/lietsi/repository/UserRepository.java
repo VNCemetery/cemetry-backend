@@ -1,6 +1,6 @@
 package org.dongthap.lietsi.repository;
 
-import org.dongthap.lietsi.entity.User;
+import org.dongthap.lietsi.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

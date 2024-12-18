@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.entity;
+package org.dongthap.lietsi.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

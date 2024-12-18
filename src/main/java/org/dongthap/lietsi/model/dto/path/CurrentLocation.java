@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.dto.path;
+package org.dongthap.lietsi.model.dto.path;
 
 import lombok.*;
 

@@ -2,7 +2,7 @@ package org.dongthap.lietsi.controller.auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.dto.auth.ForgotPasswordRequest;
+import org.dongthap.lietsi.model.dto.auth.ForgotPasswordRequest;
 import org.dongthap.lietsi.service.PasswordService;
 import org.dongthap.lietsi.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;

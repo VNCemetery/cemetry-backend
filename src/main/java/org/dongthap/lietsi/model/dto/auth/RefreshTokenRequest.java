@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.dto.auth;
+package org.dongthap.lietsi.model.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 

@@ -1,8 +1,7 @@
 package org.dongthap.lietsi.service;
 
-import org.dongthap.lietsi.dto.path.PathFindingRequest;
-import org.dongthap.lietsi.entity.Edge;
-import org.dongthap.lietsi.entity.Vertex;
+import org.dongthap.lietsi.model.dto.path.PathFindingRequest;
+import org.dongthap.lietsi.model.entity.Vertex;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.entity.common;
+package org.dongthap.lietsi.model.entity.common;
 
 import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.CreationTimestamp;

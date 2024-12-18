@@ -1,11 +1,9 @@
 package org.dongthap.lietsi.filter;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.StringUtils;
-import org.dongthap.lietsi.dto.search.SortRequest;
+import org.dongthap.lietsi.model.dto.search.SortRequest;
 
 public enum SortDirection {
     ASC {

@@ -1,8 +1,8 @@
-package org.dongthap.lietsi.entity;
+package org.dongthap.lietsi.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dongthap.lietsi.entity.common.BaseEntity;
+import org.dongthap.lietsi.model.entity.common.BaseEntity;
 
 
 @EqualsAndHashCode(callSuper = true)

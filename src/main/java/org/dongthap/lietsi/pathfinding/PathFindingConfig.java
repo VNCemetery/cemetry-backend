@@ -1,12 +1,11 @@
 package org.dongthap.lietsi.pathfinding;
 
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.entity.Cell;
+import org.dongthap.lietsi.model.entity.Cell;
 import org.dongthap.lietsi.repository.CellRepository;
 import org.dongthap.lietsi.repository.EdgeRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
