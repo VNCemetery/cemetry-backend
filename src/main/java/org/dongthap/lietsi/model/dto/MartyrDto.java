@@ -8,7 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Schema(description = "Martyr details response")
+@Schema(
+    description = "Represents detailed information about a martyr",
+    title = "Martyr Details"
+)
 @Data
 @Getter
 @Setter
@@ -16,19 +19,35 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MartyrDto {
-    @Schema(description = "Unique identifier", example = "1")
+    @Schema(
+        description = "Unique identifier of the martyr record",
+        example = "1",
+        requiredMode = Schema.RequiredMode.REQUIRED
+    )
     private Long id;
 
-    @Schema(description = "Cemetery area name", example = "Area A")
+    @Schema(
+        description = "Name of the cemetery area where the martyr is buried",
+        example = "Area A - South Section",
+        requiredMode = Schema.RequiredMode.REQUIRED
+    )
     private String areaName;
 
-    @Schema(description = "Row name/number", example = "Row 1")
+    @Schema(
+        description = "Row identifier within the cemetery area",
+        example = "Row 1-B",
+        requiredMode = Schema.RequiredMode.REQUIRED
+    )
     private String rowName;
 
     @Schema(description = "Image URL/path", example = "martyrs/image1.jpg")
     private String image;
 
-    @Schema(description = "Full name", example = "Nguyen Van A")
+    @Schema(
+        description = "Full formal name of the martyr",
+        example = "Nguyen Van Anh",
+        requiredMode = Schema.RequiredMode.REQUIRED
+    )
     private String fullName;
 
     @Schema(description = "Short name", example = "Van A")
