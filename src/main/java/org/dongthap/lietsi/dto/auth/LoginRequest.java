@@ -1,4 +1,4 @@
-package org.dongthap.lietsi.controller.auth;
+package org.dongthap.lietsi.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

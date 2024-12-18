@@ -11,6 +11,7 @@ import org.dongthap.lietsi.dto.MartyrDto;
 import org.dongthap.lietsi.dto.MartyrRequest;
 import org.dongthap.lietsi.dto.search.SearchRequest;
 import org.dongthap.lietsi.service.MartyrService;
+import org.dongthap.lietsi.util.ResponseUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -53,8 +54,8 @@ public class MartyrController {
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         martyrService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ResponseUtils.OK);
     }
 }

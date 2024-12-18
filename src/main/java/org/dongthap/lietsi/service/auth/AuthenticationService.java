@@ -1,11 +1,10 @@
 package org.dongthap.lietsi.service.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.controller.auth.LoginRequest;
-import org.dongthap.lietsi.controller.auth.LoginResponse;
+import org.dongthap.lietsi.dto.auth.LoginRequest;
+import org.dongthap.lietsi.dto.auth.LoginResponse;
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.exception.UnauthorizedException;
-import org.dongthap.lietsi.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
