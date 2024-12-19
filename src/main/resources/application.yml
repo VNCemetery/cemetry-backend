@@ -24,6 +24,8 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.MariaDBDialect
   flyway:
+    enabled: true
+    validateOnMigrate: true
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
