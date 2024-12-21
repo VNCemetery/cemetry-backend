@@ -1,11 +1,11 @@
 package org.dongthap.lietsi.service.impl;
 
-import org.dongthap.lietsi.dto.path.CurrentLocation;
-import org.dongthap.lietsi.dto.path.PathFindingRequest;
-import org.dongthap.lietsi.entity.Cell;
-import org.dongthap.lietsi.entity.Edge;
-import org.dongthap.lietsi.entity.GraveRow;
-import org.dongthap.lietsi.entity.Vertex;
+import org.dongthap.lietsi.model.dto.path.CurrentLocation;
+import org.dongthap.lietsi.model.dto.path.PathFindingRequest;
+import org.dongthap.lietsi.model.entity.Cell;
+import org.dongthap.lietsi.model.entity.Edge;
+import org.dongthap.lietsi.model.entity.GraveRow;
+import org.dongthap.lietsi.model.entity.Vertex;
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.pathfinding.PathFinding;
 import org.dongthap.lietsi.repository.GraveRowRepository;

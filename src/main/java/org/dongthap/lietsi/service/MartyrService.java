@@ -1,15 +1,15 @@
 package org.dongthap.lietsi.service;
 
-import org.dongthap.lietsi.dto.MartyrDto;
-import org.dongthap.lietsi.dto.MartyrRequest;
-import org.dongthap.lietsi.dto.search.SearchRequest;
+import org.dongthap.lietsi.model.dto.MartyrDto;
+import org.dongthap.lietsi.model.dto.MartyrRequest;
+import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
 
 import java.util.List;
 
 public interface MartyrService {
     List<MartyrDto> findAll();
 
-    List<MartyrDto> search(SearchRequest searchRequest);
+    List<MartyrDto> search(MartyrSearchRequest searchRequest);
 
     MartyrDto upsert(MartyrRequest martyrDto);
 

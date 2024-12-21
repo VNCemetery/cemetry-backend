@@ -1,5 +1,11 @@
 package org.dongthap.lietsi.exception.advice;
 
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.exception.ErrorResponse;
 import org.dongthap.lietsi.exception.UnauthorizedException;
@@ -11,21 +17,15 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @ControllerAdvice
 @ResponseBody
@@ -63,14 +63,22 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    @ExceptionHandler({UnauthorizedException.class})
-    public ResponseEntity<Object> unauthorizedRequest(UnauthorizedException e) {
+    @ExceptionHandler({
+        UnauthorizedException.class,
+        AuthenticationException.class,
+        InternalAuthenticationServiceException.class,
+        BadCredentialsException.class
+    })
+    public ResponseEntity<Object> unauthorizedRequest(Exception e) {
         logger.error(e.getMessage(), e.getCause());
+        String message = e.getCause() instanceof UsernameNotFoundException ? 
+            e.getCause().getMessage() : e.getMessage();
+            
         ErrorResponse error = ErrorResponse.builder()
                 .code(HttpStatus.UNAUTHORIZED.value())
                 .timestamp(LocalDateTime.now())
                 .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .description(e.getMessage())
+                .description(message)
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
@@ -85,18 +93,6 @@ public class CustomAdviceController extends ResponseEntityExceptionHandler {
                 .description(e.getMessage())
                 .build();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
-    }
-
-    @ExceptionHandler({BadCredentialsException.class})
-    public ResponseEntity<Object> badCredentials(BadCredentialsException e) {
-        logger.error(e.getMessage(), e.getCause());
-        ErrorResponse error = ErrorResponse.builder()
-                .code(HttpStatus.UNAUTHORIZED.value())
-                .message(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                .timestamp(LocalDateTime.now())
-                .description(e.getMessage())
-                .build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler({Exception.class})

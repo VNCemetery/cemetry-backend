@@ -2,7 +2,7 @@ package org.dongthap.lietsi.filter;
 
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
-import org.dongthap.lietsi.dto.search.FilterRequest;
+import org.dongthap.lietsi.model.dto.search.FilterRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

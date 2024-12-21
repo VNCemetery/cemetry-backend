@@ -1,6 +1,11 @@
 spring:
   application:
     name: weblietsi-backend
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: admin@gmail.com
+    password: admin
   datasource:
     url: jdbc:mariadb://localhost:3305/lietsi
     username: root
@@ -19,6 +24,8 @@ spring:
         format_sql: false
         dialect: org.hibernate.dialect.MariaDBDialect
   flyway:
+    enabled: true
+    validateOnMigrate: true
     url: ${spring.datasource.url}
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}

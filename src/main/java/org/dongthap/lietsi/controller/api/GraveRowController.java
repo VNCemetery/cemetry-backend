@@ -1,7 +1,7 @@
 package org.dongthap.lietsi.controller.api;
 
 import lombok.RequiredArgsConstructor;
-import org.dongthap.lietsi.entity.GraveRow;
+import org.dongthap.lietsi.model.entity.GraveRow;
 import org.dongthap.lietsi.repository.GraveRowRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

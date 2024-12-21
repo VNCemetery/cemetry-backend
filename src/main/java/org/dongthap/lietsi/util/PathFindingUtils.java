@@ -1,11 +1,11 @@
 package org.dongthap.lietsi.util;
 
 import lombok.experimental.UtilityClass;
-import org.dongthap.lietsi.dto.path.CurrentLocation;
-import org.dongthap.lietsi.entity.Cell;
-import org.dongthap.lietsi.entity.Edge;
-import org.dongthap.lietsi.entity.GraveRow;
-import org.dongthap.lietsi.entity.Vertex;
+import org.dongthap.lietsi.model.dto.path.CurrentLocation;
+import org.dongthap.lietsi.model.entity.Cell;
+import org.dongthap.lietsi.model.entity.Edge;
+import org.dongthap.lietsi.model.entity.GraveRow;
+import org.dongthap.lietsi.model.entity.Vertex;
 
 import java.util.*;
 
