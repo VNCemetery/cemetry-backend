@@ -2,10 +2,10 @@ spring:
   application:
     name: weblietsi-backend
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: admin@gmail.com
-    password: admin
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
   datasource:
     url: jdbc:mariadb://localhost:3305/lietsi
     username: root
