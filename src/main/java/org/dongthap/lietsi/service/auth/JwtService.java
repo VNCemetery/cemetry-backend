@@ -1,6 +1,8 @@
 package org.dongthap.lietsi.service.auth;
 
-import lombok.RequiredArgsConstructor;
+import java.time.Instant;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -9,8 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,10 @@ public class JwtService {
 
     private Map<String, Object> extractClaims(String token) {
         return jwtDecoder.decode(token).getClaims();
+    }
+
+    public int getAccessTokenExpirationSeconds() {
+        return accessTokenExpirationTime; // or whatever your configured JWT expiration time is
     }
 
     private JwtClaimsSet createClaims(UserDetails userDetails, int expiredTime) {

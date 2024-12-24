@@ -1,21 +1,18 @@
 version: '3.1'
 
 services:
-  mariadb:
-    image: mariadb:10.6
+  postgis:
+    image: postgis/postgis:15-3.3
     restart: always
     ports:
-      - '3305:3306'
-    expose:
-      - '3305'
+      - '5432:5432'
     environment:
-      MYSQL_DATABASE: lietsi
-      MARIADB_ROOT_PASSWORD: root
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: root
+      POSTGRES_DB: lietsi
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     volumes:
-      - weblietsi-mariadb:/var/lib/mysql
+      - weblietsi-postgres:/var/lib/postgresql/data
 
 volumes:
-    weblietsi-mariadb:
+    weblietsi-postgres:
       external: true

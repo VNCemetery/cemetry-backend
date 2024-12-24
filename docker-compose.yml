@@ -9,38 +9,36 @@ services:
     working_dir: /app
     command: bash -c "mvn clean install -DskipTests && mvn spring-boot:run"
     networks:
-      - lietsi-mariadb-net
+      - lietsi-postgres-net
     depends_on:
-      - mariadb
+      - postgis
     ports:
       - '8000:8080'
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/lietsi
-      SPRING_DATASOURCE_USERNAME: dev
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgis:5432/lietsi
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_SERVER_PORT: '8080'
-  mariadb:
-    image: mariadb:10.6
+
+  postgis:
+    image: postgis/postgis:15-3.3
     restart: always
     ports:
-      - '3305:3306'
-    expose:
-      - '3305'
+      - '5432:5432'
     networks:
-      - lietsi-mariadb-net
+      - lietsi-postgres-net
     environment:
-      MYSQL_DATABASE: lietsi
-      MARIADB_ROOT_PASSWORD: root
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: root
+      POSTGRES_DB: lietsi
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     volumes:
-      - weblietsi-mariadb:/var/lib/mysql
+      - weblietsi-postgres:/var/lib/postgresql/data
 
 networks:
-  lietsi-mariadb-net:
+  lietsi-postgres-net:
 
 volumes:
-  weblietsi-mariadb:
+  weblietsi-postgres:
     external: true
   maven-repo:
     external: true
