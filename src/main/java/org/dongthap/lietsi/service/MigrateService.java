@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,15 +19,12 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.dongthap.lietsi.model.entity.Cell;
-import org.dongthap.lietsi.model.entity.Edge;
-import org.dongthap.lietsi.model.entity.GraveRow;
-import org.dongthap.lietsi.model.entity.MartyrGrave;
-import org.dongthap.lietsi.model.entity.Vertex;
+import org.dongthap.lietsi.model.entity.*;
 import org.dongthap.lietsi.repository.CellRepository;
 import org.dongthap.lietsi.repository.EdgeRepository;
 import org.dongthap.lietsi.repository.GraveRowRepository;
 import org.dongthap.lietsi.repository.MartyrRepository;
+import org.dongthap.lietsi.repository.UserRepository;
 import org.dongthap.lietsi.repository.VertexRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -33,6 +32,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
@@ -50,19 +50,38 @@ public class MigrateService {
     private final VertexRepository vertexRepository;
     private final EdgeRepository edgeRepository;
     private final CellRepository cellRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final DataFormatter formatter;
 
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-    
+
     private long nextGraveRowId = 1000; // Start from 1000 to avoid conflicts with existing IDs
 
     @Transactional
     public void migrateAll() throws Exception {
+        migrateUsers();
         migrateVertices();
         migrateEdges();
         migrateCells();
         migrateGraveRows();
         migrateMartyr();
+    }
+
+    @Transactional
+    public void migrateUsers() {
+        if (userRepository.count() > 0) {
+            return;
+        }
+
+        User adminUser = User.builder()
+                .id(UUID.fromString("00000000-0000-0000-0000-000000000001"))
+                .username("admin")
+                .password("$2a$12$vN.fbI69UOW7pKYDglW7vurfnFGm3PL4ou/YwOa3QCpVIz/chqqfG")
+                .email("safeyouteam@gmail.com")
+                .build();
+
+        userRepository.save(adminUser);
     }
 
     @Transactional
@@ -161,14 +180,14 @@ public class MigrateService {
             while ((line = csvReader.readNext()) != null) {
                 long cellId = Long.parseLong(line[0]);
                 int vertexId = Integer.parseInt(line[1]);
-                
+
                 // Find vertex coordinates from vertex.csv
                 try (Reader vertexReader = new InputStreamReader(getClass().getClassLoader()
                         .getResourceAsStream("data/vertex.csv"))) {
                     CSVReader vertexCsvReader = new CSVReader(vertexReader);
                     vertexCsvReader.readNext(); // Skip header
                     String[] vertexLine;
-                    
+
                     while ((vertexLine = vertexCsvReader.readNext()) != null) {
                         if (Integer.parseInt(vertexLine[0]) == vertexId) {
                             String coordKey = vertexLine[1] + "," + vertexLine[2];
