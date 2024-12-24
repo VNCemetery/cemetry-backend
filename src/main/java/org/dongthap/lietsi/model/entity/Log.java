@@ -1,18 +1,11 @@
 package org.dongthap.lietsi.model.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+import jakarta.persistence.*;
 import org.dongthap.lietsi.model.enums.LogAction;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,11 +19,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "logs")
 public class Log {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

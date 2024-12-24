@@ -6,6 +6,7 @@ import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MartyrService {
     List<MartyrDto> findAll();
@@ -14,7 +15,7 @@ public interface MartyrService {
 
     MartyrDto upsert(MartyrRequest martyrDto);
 
-    void delete(Long id);
+    void delete(UUID id);
 
-    MartyrDto findById(Long id);
+    MartyrDto findById(UUID id);
 }

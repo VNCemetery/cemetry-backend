@@ -2,6 +2,7 @@ package org.dongthap.lietsi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.mapper.MartyrMapper;
@@ -91,12 +92,12 @@ public class MartyrServiceImpl implements MartyrService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(UUID id) {
         martyrRepository.deleteById(id);
     }
 
     @Override
-    public MartyrDto findById(Long id) {
+    public MartyrDto findById(UUID id) {
         return martyrRepository.findById(id)
                 .map(MartyrMapper.INSTANCE::toDto)
                 .orElseThrow(() -> BadRequestException.message("Không tìm thấy liệt sĩ"));

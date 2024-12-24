@@ -7,6 +7,8 @@ import org.dongthap.lietsi.model.entity.common.BaseEntity;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
@@ -20,7 +22,9 @@ import org.hibernate.annotations.FetchMode;
 })
 public class GraveRow extends BaseEntity {
     @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
 
     @Column(name = "area_name")
     private String areaName;
@@ -28,15 +32,13 @@ public class GraveRow extends BaseEntity {
     @Column(name = "row_name")
     private String rowName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "vertex1_id")
-    @Fetch(FetchMode.JOIN)
     @JsonIgnore
     private Vertex vertex1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "vertex2_id")
-    @Fetch(FetchMode.JOIN)
     @JsonIgnore
     private Vertex vertex2;
 

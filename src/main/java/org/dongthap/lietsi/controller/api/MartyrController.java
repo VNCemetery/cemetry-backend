@@ -28,6 +28,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/martyrs")
 @RequiredArgsConstructor
@@ -134,7 +136,7 @@ public class MartyrController {
     @GetMapping("/{id}")
     public ResponseEntity<MartyrDto> findById(
         @Parameter(description = "ID of the martyr to retrieve", required = true)
-        @PathVariable Long id
+        @PathVariable UUID id
     ) {
         return ResponseEntity.ok(martyrService.findById(id));
     }
@@ -193,7 +195,7 @@ public class MartyrController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<?> delete(
         @Parameter(description = "ID of the martyr to delete", required = true)
-        @PathVariable Long id
+        @PathVariable UUID id
     ) {
         martyrService.delete(id);
         return ResponseEntity.ok(ResponseUtils.OK);

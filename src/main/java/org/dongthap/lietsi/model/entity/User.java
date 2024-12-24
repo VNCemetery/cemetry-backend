@@ -2,6 +2,7 @@ package org.dongthap.lietsi.model.entity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.dongthap.lietsi.model.entity.common.BaseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,8 +33,8 @@ import lombok.Setter;
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(name = "username", unique = true)
     private String username;

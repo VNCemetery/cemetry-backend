@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Schema(
     description = "Represents detailed information about a martyr",
     title = "Martyr Details"
@@ -20,11 +22,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MartyrDto {
     @Schema(
-        description = "Unique identifier of the martyr record",
-        example = "1",
+        description = "Unique identifier of the martyr",
+        example = "123e4567-e89b-12d3-a456-426614174000",
         requiredMode = Schema.RequiredMode.REQUIRED
     )
-    private Long id;
+    private UUID id;
 
     @Schema(
         description = "Name of the cemetery area where the martyr is buried",

@@ -1,25 +1,45 @@
 package org.dongthap.lietsi.service;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.dongthap.lietsi.model.entity.Cell;
+import org.dongthap.lietsi.model.entity.Edge;
 import org.dongthap.lietsi.model.entity.GraveRow;
 import org.dongthap.lietsi.model.entity.MartyrGrave;
+import org.dongthap.lietsi.model.entity.Vertex;
+import org.dongthap.lietsi.repository.CellRepository;
+import org.dongthap.lietsi.repository.EdgeRepository;
 import org.dongthap.lietsi.repository.GraveRowRepository;
 import org.dongthap.lietsi.repository.MartyrRepository;
+import org.dongthap.lietsi.repository.VertexRepository;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +47,196 @@ public class MigrateService {
     private static final Logger log = LoggerFactory.getLogger(MigrateService.class);
     private final MartyrRepository martyrRepository;
     private final GraveRowRepository graveRowRepository;
-
+    private final VertexRepository vertexRepository;
+    private final EdgeRepository edgeRepository;
+    private final CellRepository cellRepository;
     private final DataFormatter formatter;
+
+    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    
+    private long nextGraveRowId = 1000; // Start from 1000 to avoid conflicts with existing IDs
+
+    @Transactional
+    public void migrateAll() throws Exception {
+        migrateVertices();
+        migrateEdges();
+        migrateCells();
+        migrateGraveRows();
+        migrateMartyr();
+    }
+
+    @Transactional
+    public void migrateVertices() throws IOException, CsvValidationException {
+        if (vertexRepository.count() > 0) {
+            return;
+        }
+
+        try (Reader reader = new InputStreamReader(getClass().getClassLoader()
+                .getResourceAsStream("data/vertex.csv"))) {
+            CSVReader csvReader = new CSVReader(reader);
+            String[] header = csvReader.readNext();
+            String[] line;
+
+            List<Vertex> vertices = new ArrayList<>();
+            while ((line = csvReader.readNext()) != null) {
+                long id = Long.parseLong(line[0]);
+                double lat = Double.parseDouble(line[1]);
+                double lon = Double.parseDouble(line[2]);
+
+                Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
+                point.setSRID(4326);
+
+                Vertex vertex = Vertex.builder()
+                        .id(id)
+                        .latitude(lat)
+                        .longitude(lon)
+                        .geom(point)
+                        .build();
+                vertices.add(vertex);
+            }
+
+            vertexRepository.saveAll(vertices);
+        }
+    }
+
+    @Transactional
+    public void migrateEdges() throws IOException, CsvValidationException {
+        if (edgeRepository.count() > 0) {
+            return;
+        }
+
+        Map<Long, Vertex> vertexMap = new HashMap<>();
+        vertexRepository.findAll().forEach(v ->
+                vertexMap.put(v.getId(), v)
+        );
+
+        try (Reader reader = new InputStreamReader(getClass().getClassLoader()
+                .getResourceAsStream("data/edge.csv"))) {
+            CSVReader csvReader = new CSVReader(reader);
+            String[] header = csvReader.readNext();
+            String[] line;
+
+            List<Edge> edges = new ArrayList<>();
+            while ((line = csvReader.readNext()) != null) {
+                long id = Long.parseLong(line[0]);
+                long vertex1Id = Long.parseLong(line[1]);
+                long vertex2Id = Long.parseLong(line[2]);
+                double distance = Double.parseDouble(line[3]);
+
+                Edge edge = Edge.builder()
+                        .id(id)
+                        .vertex1(vertexMap.get(vertex1Id))
+                        .vertex2(vertexMap.get(vertex2Id))
+                        .distance(distance)
+                        .oneWay(false)
+                        .build();
+                edges.add(edge);
+            }
+
+            edgeRepository.saveAll(edges);
+        }
+    }
+
+    @Transactional
+    public void migrateCells() throws IOException, CsvValidationException {
+        if (cellRepository.count() > 0) {
+            return;
+        }
+
+        // Load all vertices into a map using coordinates as key for lookup
+        Map<String, Vertex> vertexCoordMap = new HashMap<>();
+        vertexRepository.findAll().forEach(v -> {
+            String key = v.getLatitude() + "," + v.getLongitude();
+            vertexCoordMap.put(key, v);
+        });
+
+        // Process cell_vertex.csv and map vertices to cells
+        Map<Long, Set<Vertex>> cellVertices = new HashMap<>();
+        try (Reader reader = new InputStreamReader(getClass().getClassLoader()
+                .getResourceAsStream("data/cell_vertex.csv"))) {
+            CSVReader csvReader = new CSVReader(reader);
+            csvReader.readNext(); // Skip header
+            String[] line;
+
+            while ((line = csvReader.readNext()) != null) {
+                long cellId = Long.parseLong(line[0]);
+                int vertexId = Integer.parseInt(line[1]);
+                
+                // Find vertex coordinates from vertex.csv
+                try (Reader vertexReader = new InputStreamReader(getClass().getClassLoader()
+                        .getResourceAsStream("data/vertex.csv"))) {
+                    CSVReader vertexCsvReader = new CSVReader(vertexReader);
+                    vertexCsvReader.readNext(); // Skip header
+                    String[] vertexLine;
+                    
+                    while ((vertexLine = vertexCsvReader.readNext()) != null) {
+                        if (Integer.parseInt(vertexLine[0]) == vertexId) {
+                            String coordKey = vertexLine[1] + "," + vertexLine[2];
+                            Vertex vertex = vertexCoordMap.get(coordKey);
+                            if (vertex != null) {
+                                cellVertices.computeIfAbsent(cellId, k -> new HashSet<>())
+                                        .add(vertex);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Create and save cells with their Long IDs
+        List<Cell> cells = new ArrayList<>();
+        cellVertices.forEach((id, vertices) -> {
+            Cell cell = Cell.builder()
+                    .id(id) // Now using Long ID from CSV
+                    .vertices(vertices)
+                    .build();
+            cells.add(cell);
+        });
+
+        cellRepository.saveAll(cells);
+    }
+
+    @Transactional
+    public void migrateGraveRows() throws IOException, CsvValidationException {
+        if (graveRowRepository.count() > 0) {
+            return;
+        }
+
+        Map<Long, Vertex> vertexMap = new HashMap<>();
+        vertexRepository.findAll().forEach(v -> vertexMap.put(v.getId(), v));
+
+        try (Reader reader = new InputStreamReader(getClass().getClassLoader()
+                .getResourceAsStream("data/grave_row_with_vertex.csv"))) {
+            CSVReader csvReader = new CSVReader(reader);
+            String[] header = csvReader.readNext();
+            String[] line;
+
+            List<GraveRow> rows = new ArrayList<>();
+            while ((line = csvReader.readNext()) != null) {
+                long id = Long.parseLong(line[0]);
+                String areaName = line[3];
+                String rowName = line[4];
+                if (line[5].isEmpty() || line[6].isEmpty()) {
+                    log.warn("Empty vertex ID at row {}", id);
+                    continue;
+                }
+                long vertex1Id = Long.parseLong(line[5]);
+                long vertex2Id = Long.parseLong(line[6]);
+
+                GraveRow row = GraveRow.builder()
+                        .id(id)
+                        .areaName(areaName)
+                        .rowName(rowName)
+                        .vertex1(vertexMap.get(vertex1Id))
+                        .vertex2(vertexMap.get(vertex2Id))
+                        .build();
+                rows.add(row);
+            }
+
+            graveRowRepository.saveAll(rows);
+        }
+    }
 
     @Transactional
     public void migrateMartyr() throws IOException, InvalidFormatException {
@@ -72,7 +280,7 @@ public class MigrateService {
                     String codeName = StringUtils.trimToEmpty(formatter.formatCellValue(row.getCell(5)));
                     martyrGrave = MartyrGrave.builder()
                             .graveRow(graveRow)
-                            .id((long) row.getCell(2).getNumericCellValue())
+//                            .id((long) row.getCell(2).getNumericCellValue())
                             .fullName(fullName)
                             .name(name)
                             .codeName(codeName)
@@ -92,7 +300,7 @@ public class MigrateService {
                 } else {
                     martyrGrave = MartyrGrave.builder()
                             .graveRow(graveRow)
-                            .id((long) row.getCell(3).getNumericCellValue())
+//                            .id((long) row.getCell(3).getNumericCellValue())
                             .fullName(formatter.formatCellValue(row.getCell(4)))
                             .yearOfBirth(formatter.formatCellValue(row.getCell(5)))
                             .dateOfEnlistment(formatter.formatCellValue(row.getCell(6)))
@@ -114,14 +322,17 @@ public class MigrateService {
             rowName = "Hàng " + rowName;
         }
 
+        // remove multiple continuous spaces
+        rowName = rowName.replaceAll("\\s+", " ");
+
         GraveRow graveRow = graveRowRepository.findByAreaNameAndRowName(areaName, rowName);
         if (graveRow == null) {
-            graveRow = graveRowRepository.save(
-                    GraveRow.builder()
-                            .areaName(areaName)
-                            .rowName(rowName)
-                            .build()
-            );
+            graveRow = GraveRow.builder()
+                    .id(nextGraveRowId++)
+                    .areaName(areaName)
+                    .rowName(rowName)
+                    .build();
+            graveRow = graveRowRepository.save(graveRow);
         }
         return graveRow;
     }

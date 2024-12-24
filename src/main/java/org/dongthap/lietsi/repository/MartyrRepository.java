@@ -4,6 +4,8 @@ import org.dongthap.lietsi.model.entity.MartyrGrave;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface MartyrRepository extends JpaRepository<MartyrGrave, Long>,
+import java.util.UUID;
+
+public interface MartyrRepository extends JpaRepository<MartyrGrave, UUID>,
         JpaSpecificationExecutor<MartyrGrave> {
 }

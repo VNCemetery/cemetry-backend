@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Fetch;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -16,6 +17,7 @@ import java.util.Set;
 @Table(name = "cells")
 public class Cell {
     @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToMany(fetch = FetchType.EAGER)
