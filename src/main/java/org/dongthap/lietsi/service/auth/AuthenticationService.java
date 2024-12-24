@@ -48,8 +48,9 @@ public class AuthenticationService {
             throw UnauthorizedException.message("Can not find user: " + loginRequest.username());
         }
         logService.logAnonymous(LogAction.LOGIN, "User: " + loginRequest.username());
-        return new LoginResponse(jwtService.generateAccessToken(userDetails),
-                jwtService.generateRefreshToken(userDetails));
+        String accessToken = jwtService.generateAccessToken(userDetails);
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        return new LoginResponse(accessToken, refreshToken, jwtService.getAccessTokenExpirationSeconds());
     }
 
     public LoginResponse refreshToken(String refreshToken) {
@@ -69,7 +70,7 @@ public class AuthenticationService {
 
         var newAccessToken = jwtService.generateAccessToken(user);
         logService.log(LogAction.REFRESH_TOKEN, "User: " + username);
-        return new LoginResponse(newAccessToken, refreshToken);
+        return new LoginResponse(newAccessToken, refreshToken, jwtService.getAccessTokenExpirationSeconds());
     }
 
     public void logout(String refreshToken) {

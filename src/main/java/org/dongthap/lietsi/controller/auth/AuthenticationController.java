@@ -44,7 +44,8 @@ public class AuthenticationController {
                 examples = @ExampleObject(value = """
                     {
                         "access_token": "eyJhbGciOiJ...",
-                        "refresh_token": "eyJhbGciOiJ..."
+                        "refresh_token": "eyJhbGciOiJ...",
+                        "expires_in": 3600
                     }
                     """)
             )

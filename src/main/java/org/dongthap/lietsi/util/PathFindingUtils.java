@@ -106,7 +106,7 @@ public class PathFindingUtils {
         while (!priorityQueue.isEmpty()) {
             PathNode currentNode = priorityQueue.poll();
             Vertex currentVertex = currentNode.vertex;
-            if (currentVertex.equals(endVertex)) {
+            if (Objects.equals(currentVertex, endVertex)) {
                 while (currentNode != null) {
                     path.add(currentNode.vertex);
                     currentNode = pathNodes.get(currentNode.previous);
@@ -118,7 +118,7 @@ public class PathFindingUtils {
             visitedVertices.add(currentVertex);
             List<Edge> adjacentEdges = getAdjacentEdges(edges, currentVertex);
             for (Edge edge : adjacentEdges) {
-                Vertex nextVertex = edge.getVertex1().equals(currentVertex) ? edge.getVertex2() : edge.getVertex1();
+                Vertex nextVertex = Objects.equals(edge.getVertex1(), currentVertex) ? edge.getVertex2() : edge.getVertex1();
                 if (visitedVertices.contains(nextVertex)) {
                     continue;
                 }
@@ -144,7 +144,7 @@ public class PathFindingUtils {
     private static List<Edge> getAdjacentEdges(List<Edge> edges, Vertex vertex) {
         List<Edge> adjacentEdges = new ArrayList<>();
         for (Edge edge : edges) {
-            if (edge.getVertex1().equals(vertex) || edge.getVertex2().equals(vertex)) {
+            if (Objects.equals(edge.getVertex1(), vertex) || Objects.equals(edge.getVertex2(), vertex)) {
                 adjacentEdges.add(edge);
             }
         }
@@ -156,7 +156,7 @@ public class PathFindingUtils {
         Edge nextEdge = null;
         double minDistance = Double.MAX_VALUE;
         for (Edge edge : edges) {
-            if (edge.getVertex1().equals(currentVertex)) {
+            if (Objects.equals(edge.getVertex1(), currentVertex) || Objects.equals(edge.getVertex2(), currentVertex)) {
                 double distance = calculateDistance(edge.getVertex2(), endVertex);
                 if (distance < minDistance) {
                     minDistance = distance;

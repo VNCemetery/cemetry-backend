@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Schema(description = "Martyr creation/update request")
 @Data
 @Getter
@@ -18,8 +20,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MartyrRequest {
-    @Schema(description = "Martyr ID (null for creation)", example = "1")
-    private Long id;
+    @Schema(description = "Unique identifier of the martyr", example = "123e4567-e89b-12d3-a456-426614174000")
+    private UUID id;
 
     @Schema(description = "Image URL/path", example = "martyrs/image1.jpg")
     private String image;

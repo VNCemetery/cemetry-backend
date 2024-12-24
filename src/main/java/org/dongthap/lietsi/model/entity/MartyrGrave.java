@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.dongthap.lietsi.model.entity.common.BaseEntity;
 import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.SoftDelete;
+
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -19,11 +20,10 @@ import org.hibernate.annotations.SoftDelete;
         @Index(name = "index_martyr_graves_name", columnList = "name"),
         @Index(name = "index_martyr_graves_code_name", columnList = "code_name")
 })
-@SoftDelete
 public class MartyrGrave extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
     @Column(name = "image")
     private String image;

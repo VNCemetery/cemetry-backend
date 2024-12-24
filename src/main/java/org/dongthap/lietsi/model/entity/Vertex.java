@@ -1,14 +1,22 @@
 package org.dongthap.lietsi.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-import org.dongthap.lietsi.constant.DbConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import java.util.UUID;
 
-import java.math.BigDecimal;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.locationtech.jts.geom.Point;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @Builder
@@ -20,10 +28,13 @@ import java.util.Set;
 @Table(name = "vertices")
 public class Vertex {
     @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "latitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private Double latitude;
-    @Column(name = "longitude", columnDefinition = DbConstants.DECIMAL_COORDINATE_DEFAULT_0)
-    private Double longitude;
+    private double latitude;
+    private double longitude;
+
+    @Column(columnDefinition = "geometry(Point, 4326)")
+    @JsonIgnore
+    private Point geom;
 }

@@ -21,7 +21,7 @@ public class LogService {
     public CompletableFuture<Void> log(LogAction action, String resource) {
         User currentUser = userService.getCurrentUser();
         Log log = Log.builder()
-                .userId(currentUser.getId())
+                .user(currentUser)
                 .action(action)
                 .resource(resource)
                 .build();
