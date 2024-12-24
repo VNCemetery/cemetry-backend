@@ -15,6 +15,7 @@ import org.dongthap.lietsi.repository.MartyrRepository;
 import org.dongthap.lietsi.repository.specification.SearchSpecification;
 import org.dongthap.lietsi.service.MartyrService;
 import org.dongthap.lietsi.util.CommonUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class MartyrServiceImpl implements MartyrService {
     }
 
     @Override
-    public List<MartyrDto> search(MartyrSearchRequest searchRequest) {
+    public Page<MartyrDto> search(MartyrSearchRequest searchRequest) {
         SearchSpecification<MartyrGrave> searchSpecification = new SearchSpecification<>(searchRequest);
 
         Specification<MartyrGrave> nameSpec = Optional.ofNullable(searchRequest.getName())
@@ -50,7 +51,8 @@ public class MartyrServiceImpl implements MartyrService {
         Specification<MartyrGrave> finalSpec = searchSpecification.and(nameSpec);
         Pageable pageable = SearchSpecification.getPageable(searchRequest.getPage(),
                 searchRequest.getSize());
-        return MartyrMapper.INSTANCE.toDtoList(martyrRepository.findAll(finalSpec, pageable).getContent());
+        return martyrRepository.findAll(finalSpec, pageable)
+                .map(MartyrMapper.INSTANCE::toDto);
     }
 
     @Override

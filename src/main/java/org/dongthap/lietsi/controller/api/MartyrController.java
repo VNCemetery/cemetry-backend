@@ -1,13 +1,12 @@
 package org.dongthap.lietsi.controller.api;
 
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org.dongthap.lietsi.model.dto.MartyrDto;
 import org.dongthap.lietsi.model.dto.MartyrRequest;
 import org.dongthap.lietsi.model.dto.search.MartyrSearchRequest;
 import org.dongthap.lietsi.service.MartyrService;
 import org.dongthap.lietsi.util.ResponseUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -112,7 +111,7 @@ public class MartyrController {
         )
     })
     @PostMapping("/search")
-    public ResponseEntity<List<MartyrDto>> search(@RequestBody MartyrSearchRequest searchRequest) {
+    public ResponseEntity<Page<MartyrDto>> search(@RequestBody MartyrSearchRequest searchRequest) {
         return ResponseEntity.ok(martyrService.search(searchRequest));
     }
 
