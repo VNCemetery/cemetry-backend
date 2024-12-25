@@ -1,10 +1,11 @@
 package org.dongthap.lietsi.config;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
-import lombok.RequiredArgsConstructor;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.util.UUID;
+
 import org.dongthap.lietsi.exception.auth.CustomAccessDeniedHandler;
 import org.dongthap.lietsi.exception.auth.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
@@ -24,11 +25,12 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
-import java.util.UUID;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -51,6 +53,7 @@ public class SecurityConfig {
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+        http.cors(AbstractHttpConfigurer::disable);  // Add this line
 
         return http.build();
     }
