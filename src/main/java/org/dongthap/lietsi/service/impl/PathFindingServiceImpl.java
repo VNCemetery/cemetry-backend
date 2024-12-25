@@ -3,6 +3,7 @@ package org.dongthap.lietsi.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.dongthap.lietsi.exception.BadRequestException;
@@ -60,12 +61,14 @@ public class PathFindingServiceImpl implements PathFindingService {
         List<Vertex> savedVertices = new ArrayList<>();
         for (Vertex vertex : vertices) {
             if (vertex.getId() == null) {
-                // For transient vertices (like current location), find or create them
-                Vertex existingVertex = vertexRepository.findByLatitudeAndLongitude(
+                // For transient vertices (like current location), first try to find existing one
+                Optional<Vertex> existingVertex = vertexRepository.findByLatitudeAndLongitude(
                     vertex.getLatitude(), 
                     vertex.getLongitude()
-                ).orElseGet(() -> vertexRepository.save(vertex));
-                savedVertices.add(existingVertex);
+                );
+                
+                // If not found, save as new vertex
+                savedVertices.add(existingVertex.orElseGet(() -> vertexRepository.save(vertex)));
             } else {
                 savedVertices.add(vertex);
             }

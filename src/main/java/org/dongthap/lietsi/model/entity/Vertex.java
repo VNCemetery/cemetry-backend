@@ -28,7 +28,7 @@ import lombok.Setter;
 @Table(name = "vertices")
 public class Vertex {
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private double latitude;
