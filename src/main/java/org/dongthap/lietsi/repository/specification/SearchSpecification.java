@@ -1,8 +1,9 @@
 package org.dongthap.lietsi.repository.specification;
 
-import jakarta.persistence.criteria.*;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.dongthap.lietsi.model.dto.search.FilterRequest;
 import org.dongthap.lietsi.model.dto.search.SearchRequest;
 import org.dongthap.lietsi.model.dto.search.SortRequest;
@@ -10,9 +11,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
@@ -26,16 +31,22 @@ public class SearchSpecification<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        Predicate predicate;
-        if ("search_or".equalsIgnoreCase(this.request.getSearchType())) {
-            predicate = criteriaBuilder.disjunction();
-        } else {
-            predicate = criteriaBuilder.equal(criteriaBuilder.literal(Boolean.TRUE), Boolean.TRUE);
-        }
+        List<Predicate> predicates = new ArrayList<>();
+        
         for (FilterRequest filter : this.request.getFilters()) {
             log.info("Filter: {} {} {}", filter.getKey(), filter.getOperator().toString(), filter.getValue());
             log.info("Filter IN: {} {} {}", filter.getKey(), filter.getOperator().toString(), filter.getValues());
-            predicate = filter.getOperator().build(root, criteriaBuilder, filter, predicate);
+            
+            Predicate filterPredicate = filter.getOperator().build(root, criteriaBuilder, filter, 
+                criteriaBuilder.conjunction()); // Use conjunction as base predicate
+            predicates.add(filterPredicate);
+        }
+
+        Predicate finalPredicate;
+        if ("search_or".equalsIgnoreCase(this.request.getSearchType())) {
+            finalPredicate = criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+        } else {
+            finalPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }
 
         if ("select_distinct".equals(this.request.getSearchType())) {
@@ -48,6 +59,6 @@ public class SearchSpecification<T> implements Specification<T> {
         }
 
         query.orderBy(orders);
-        return predicate;
+        return finalPredicate;
     }
 }
