@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import org.dongthap.lietsi.util.GeometryUtils;
+
 @Data
 @Builder
 @Getter
@@ -33,4 +35,12 @@ public class Vertex {
     @Column(columnDefinition = "geometry(Point, 4326)")
     @JsonIgnore
     private Point geom;
+
+    @PrePersist
+    @PreUpdate
+    public void updateGeom() {
+        if (latitude != 0 && longitude != 0) {
+            geom = GeometryUtils.createPoint(longitude, latitude);
+        }
+    }
 }

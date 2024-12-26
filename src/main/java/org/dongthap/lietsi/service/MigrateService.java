@@ -54,8 +54,6 @@ public class MigrateService {
     private final PasswordEncoder passwordEncoder;
     private final DataFormatter formatter;
 
-    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-
     private long nextGraveRowId = 1000; // Start from 1000 to avoid conflicts with existing IDs
 
     @Transactional
@@ -102,14 +100,10 @@ public class MigrateService {
                 double lat = Double.parseDouble(line[1]);
                 double lon = Double.parseDouble(line[2]);
 
-                Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
-                point.setSRID(4326);
-
                 Vertex vertex = Vertex.builder()
                         .id(id)
                         .latitude(lat)
                         .longitude(lon)
-                        .geom(point)
                         .build();
                 vertices.add(vertex);
             }

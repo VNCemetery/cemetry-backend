@@ -1,171 +1,179 @@
 package org.dongthap.lietsi.util;
 
-import lombok.experimental.UtilityClass;
+import static org.dongthap.lietsi.constant.GridConstants.GRID_SIZE;
+import static org.dongthap.lietsi.constant.GridConstants.NE_LAT;
+import static org.dongthap.lietsi.constant.GridConstants.NE_LNG;
+import static org.dongthap.lietsi.constant.GridConstants.NW_LAT;
+import static org.dongthap.lietsi.constant.GridConstants.NW_LNG;
+import static org.dongthap.lietsi.constant.GridConstants.SE_LAT;
+import static org.dongthap.lietsi.constant.GridConstants.SE_LNG;
+import static org.dongthap.lietsi.constant.GridConstants.SW_LAT;
+import static org.dongthap.lietsi.constant.GridConstants.SW_LNG;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.PriorityQueue;
+
 import org.dongthap.lietsi.model.dto.path.CurrentLocation;
 import org.dongthap.lietsi.model.entity.Cell;
 import org.dongthap.lietsi.model.entity.Edge;
 import org.dongthap.lietsi.model.entity.GraveRow;
 import org.dongthap.lietsi.model.entity.Vertex;
 
-import java.util.*;
-
-import static org.dongthap.lietsi.constant.GridConstants.*;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class PathFindingUtils {
-    public static Optional<Long> getCurrentCellId(CurrentLocation currentLocation) {
-        if (currentLocation == null) {
-            return Optional.empty();
-        }
-        Double latitude = currentLocation.getLatitude();
-        Double longitude = currentLocation.getLongitude();
+    private static final double EARTH_RADIUS = 6371; // km
+    private static final Map<String, Double> distanceCache = new HashMap<>();
 
-        if (latitude == null || longitude == null) {
+    public static Optional<Long> getCurrentCellId(CurrentLocation currentLocation) {
+        if (currentLocation == null || currentLocation.getLatitude() == null ||
+                currentLocation.getLongitude() == null) {
             return Optional.empty();
         }
+
+        double latitude = currentLocation.getLatitude();
+        double longitude = currentLocation.getLongitude();
 
         if (!isPointInPolygon(latitude, longitude)) {
             return Optional.empty();
         }
 
-        double horizontalDistance = haversine(NW_LAT, NW_LNG, NE_LAT, NE_LNG);
-        double verticalDistance = haversine(NW_LAT, NW_LNG, SW_LAT, SW_LNG);
+        // Pre-calculate distances
+        double horizontalDistance = getCachedHaversine(NW_LAT, NW_LNG, NE_LAT, NE_LNG);
+        double verticalDistance = getCachedHaversine(NW_LAT, NW_LNG, SW_LAT, SW_LNG);
         double latitudeDistance = verticalDistance / GRID_SIZE;
         double longitudeDistance = horizontalDistance / GRID_SIZE;
 
-        double a = horizontalDistance, b = verticalDistance;
-        double c = haversine(NW_LAT, NW_LNG, latitude, longitude);
-        double d = haversine(NE_LAT, NE_LNG, latitude, longitude);
-        double e = haversine(SW_LAT, SW_LNG, latitude, longitude);
-        // d^2 = a^2 + c^2 - 2ac * cos(alpha)
+        double c = getCachedHaversine(NW_LAT, NW_LNG, latitude, longitude);
+        double d = getCachedHaversine(NE_LAT, NE_LNG, latitude, longitude);
 
-        double cosAlpha = (a * a + c * c - d * d) / (2 * a * c);
+        double cosAlpha = (horizontalDistance * horizontalDistance + c * c - d * d) /
+                (2 * horizontalDistance * c);
         double colDistance = c * cosAlpha;
-        double sinAlpha = Math.sqrt(1 - cosAlpha * cosAlpha);
-        double rowDistance = c * sinAlpha;
+        double rowDistance = c * Math.sqrt(1 - cosAlpha * cosAlpha);
+
         int rowId = (int) Math.ceil(rowDistance / latitudeDistance);
         int colId = (int) Math.ceil(colDistance / longitudeDistance);
 
         return Optional.of((long) (rowId - 1) * GRID_SIZE + colId);
     }
 
+    private static double getCachedHaversine(double lat1, double lon1, double lat2, double lon2) {
+        String key = String.format("%.6f:%.6f:%.6f:%.6f", lat1, lon1, lat2, lon2);
+        return distanceCache.computeIfAbsent(key, k -> haversine(lat1, lon1, lat2, lon2));
+    }
+
     private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-        double R = 6371; // Radius of the earth in km
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+        return 2 * EARTH_RADIUS * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     public static List<Vertex> findPath(List<Edge> edges, Cell currentCell, GraveRow graveRow,
                                         CurrentLocation currentLocation) {
+        if (edges == null || edges.isEmpty() || currentCell == null || graveRow == null) {
+            return new ArrayList<>();
+        }
+
         Vertex currentVertex = Vertex.builder()
                 .latitude(currentLocation.getLatitude())
                 .longitude(currentLocation.getLongitude())
                 .build();
+
         Vertex recommendVertex = getRecommendVertex(currentCell, currentVertex);
         if (recommendVertex == null) {
             return new ArrayList<>();
         }
-        Vertex destinationVertex1 = graveRow.getVertex1();
-        Vertex destinationVertex2 = graveRow.getVertex2();
 
-        List<Vertex> path1 = dijkstra(edges, recommendVertex, destinationVertex1);
-        List<Vertex> path2 = dijkstra(edges, recommendVertex, destinationVertex2);
-        double distance1 = path1.stream().mapToDouble(vertex -> calculateDistance(vertex, recommendVertex)).sum();
-        double distance2 = path2.stream().mapToDouble(vertex -> calculateDistance(vertex, recommendVertex)).sum();
-        List<Vertex> path = distance1 < distance2 ? path1 : path2;
+        // Build adjacency list for faster edge lookup
+        Map<Vertex, List<Edge>> adjacencyList = buildAdjacencyList(edges);
+
+        // Find shortest path to both possible destinations
+        List<Vertex> path1 = dijkstra(adjacencyList, recommendVertex, graveRow.getVertex1());
+        List<Vertex> path2 = dijkstra(adjacencyList, recommendVertex, graveRow.getVertex2());
+
+        // Choose shorter path
+        List<Vertex> path = calculatePathDistance(path1, recommendVertex) <
+                calculatePathDistance(path2, recommendVertex) ? path1 : path2;
         path.add(0, currentVertex);
         return path;
     }
 
-    private static class PathNode {
-        Vertex vertex;
-        double distance;
-        Vertex previous;
+    private static Map<Vertex, List<Edge>> buildAdjacencyList(List<Edge> edges) {
+        Map<Vertex, List<Edge>> adjacencyList = new HashMap<>();
+        for (Edge edge : edges) {
+            adjacencyList.computeIfAbsent(edge.getVertex1(), k -> new ArrayList<>()).add(edge);
+            adjacencyList.computeIfAbsent(edge.getVertex2(), k -> new ArrayList<>()).add(edge);
+        }
+        return adjacencyList;
+    }
 
-        PathNode(Vertex vertex, double distance, Vertex previous) {
+    private static List<Vertex> dijkstra(Map<Vertex, List<Edge>> adjacencyList,
+                                         Vertex start, Vertex end) {
+        Map<Vertex, DijkstraNode> nodeMap = new HashMap<>();
+        PriorityQueue<DijkstraNode> queue = new PriorityQueue<>();
+
+        DijkstraNode startNode = new DijkstraNode(start, 0, null);
+        nodeMap.put(start, startNode);
+        queue.offer(startNode);
+
+        while (!queue.isEmpty()) {
+            DijkstraNode current = queue.poll();
+            if (current.vertex.equals(end)) {
+                return reconstructPath(current);
+            }
+
+            List<Edge> adjacentEdges = adjacencyList.getOrDefault(current.vertex, Collections.emptyList());
+            for (Edge edge : adjacentEdges) {
+                Vertex next = edge.getVertex1().equals(current.vertex) ?
+                        edge.getVertex2() : edge.getVertex1();
+                double newDist = current.distance + edge.getDistance();
+
+                DijkstraNode nextNode = nodeMap.get(next);
+                if (nextNode == null || newDist < nextNode.distance) {
+                    nextNode = new DijkstraNode(next, newDist, current);
+                    nodeMap.put(next, nextNode);
+                    queue.offer(nextNode);
+                }
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    private static class DijkstraNode implements Comparable<DijkstraNode> {
+        final Vertex vertex;
+        final double distance;
+        final DijkstraNode previous;
+
+        DijkstraNode(Vertex vertex, double distance, DijkstraNode previous) {
             this.vertex = vertex;
             this.distance = distance;
             this.previous = previous;
         }
+
+        @Override
+        public int compareTo(DijkstraNode other) {
+            return Double.compare(this.distance, other.distance);
+        }
     }
 
-    private static List<Vertex> dijkstra(List<Edge> edges, Vertex startVertex, Vertex endVertex) {
+    private static List<Vertex> reconstructPath(DijkstraNode endNode) {
         List<Vertex> path = new ArrayList<>();
-        Map<Vertex, PathNode> pathNodes = new HashMap<>();
-        Set<Vertex> visitedVertices = new HashSet<>();
-        PriorityQueue<PathNode> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(node -> node.distance));
-        PathNode startNode = new PathNode(startVertex, 0, null);
-        pathNodes.put(startVertex, startNode);
-        priorityQueue.add(startNode);
-
-        while (!priorityQueue.isEmpty()) {
-            PathNode currentNode = priorityQueue.poll();
-            Vertex currentVertex = currentNode.vertex;
-            if (Objects.equals(currentVertex, endVertex)) {
-                while (currentNode != null) {
-                    path.add(currentNode.vertex);
-                    currentNode = pathNodes.get(currentNode.previous);
-                }
-                Collections.reverse(path);
-                return path;
-            }
-
-            visitedVertices.add(currentVertex);
-            List<Edge> adjacentEdges = getAdjacentEdges(edges, currentVertex);
-            for (Edge edge : adjacentEdges) {
-                Vertex nextVertex = Objects.equals(edge.getVertex1(), currentVertex) ? edge.getVertex2() : edge.getVertex1();
-                if (visitedVertices.contains(nextVertex)) {
-                    continue;
-                }
-
-                double newDistance = currentNode.distance + edge.getDistance();
-                PathNode nextNode = pathNodes.get(nextVertex);
-                if (nextNode == null) {
-                    nextNode = new PathNode(nextVertex, newDistance, currentVertex);
-                    pathNodes.put(nextVertex, nextNode);
-                    priorityQueue.add(nextNode);
-                } else if (newDistance < nextNode.distance) {
-                    nextNode.distance = newDistance;
-                    nextNode.previous = currentVertex;
-                    priorityQueue.remove(nextNode);
-                    priorityQueue.add(nextNode);
-                }
-            }
+        DijkstraNode current = endNode;
+        while (current != null) {
+            path.add(0, current.vertex);
+            current = current.previous;
         }
-
         return path;
-    }
-
-    private static List<Edge> getAdjacentEdges(List<Edge> edges, Vertex vertex) {
-        List<Edge> adjacentEdges = new ArrayList<>();
-        for (Edge edge : edges) {
-            if (Objects.equals(edge.getVertex1(), vertex) || Objects.equals(edge.getVertex2(), vertex)) {
-                adjacentEdges.add(edge);
-            }
-        }
-
-        return adjacentEdges;
-    }
-
-    private static Edge getNextEdge(List<Edge> edges, Vertex currentVertex, Vertex endVertex) {
-        Edge nextEdge = null;
-        double minDistance = Double.MAX_VALUE;
-        for (Edge edge : edges) {
-            if (Objects.equals(edge.getVertex1(), currentVertex) || Objects.equals(edge.getVertex2(), currentVertex)) {
-                double distance = calculateDistance(edge.getVertex2(), endVertex);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nextEdge = edge;
-                }
-            }
-        }
-
-        return nextEdge;
     }
 
     private static Vertex getRecommendVertex(Cell currentCell, Vertex currentVertex) {
@@ -183,8 +191,24 @@ public class PathFindingUtils {
     }
 
     private static Double calculateDistance(Vertex vertex1, Vertex vertex2) {
-        return Math.sqrt(Math.pow(vertex1.getLatitude() - vertex2.getLatitude(), 2) +
-                Math.pow(vertex1.getLongitude() - vertex2.getLongitude(), 2));
+        if (vertex1 == null || vertex2 == null) {
+            return Double.MAX_VALUE;
+        }
+
+        return getCachedHaversine(vertex1.getLatitude(), vertex1.getLongitude(),
+                vertex2.getLatitude(), vertex2.getLongitude());
+    }
+
+    private static double calculatePathDistance(List<Vertex> path, Vertex startVertex) {
+        if (path == null || path.isEmpty()) {
+            return Double.MAX_VALUE;
+        }
+
+        double totalDistance = calculateDistance(startVertex, path.get(0));
+        for (int i = 0; i < path.size() - 1; i++) {
+            totalDistance += calculateDistance(path.get(i), path.get(i + 1));
+        }
+        return totalDistance;
     }
 
     private static boolean isPointInPolygon(double latitude, double longitude) {
