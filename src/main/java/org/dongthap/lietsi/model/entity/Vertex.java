@@ -3,14 +3,9 @@ package org.dongthap.lietsi.model.entity;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import org.locationtech.jts.geom.Point;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +23,8 @@ import lombok.Setter;
 @Table(name = "vertices")
 public class Vertex {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vertices_id_seq")
+    @SequenceGenerator(name = "vertices_id_seq", sequenceName = "vertices_id_seq", allocationSize = 1)
     private Long id;
 
     private double latitude;
