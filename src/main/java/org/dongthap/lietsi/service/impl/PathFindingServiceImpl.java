@@ -1,6 +1,7 @@
 package org.dongthap.lietsi.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +51,11 @@ public class PathFindingServiceImpl implements PathFindingService {
         }
 
         List<Edge> edges = pathFinding.getEdges();
-        return PathFindingUtils.findPath(edges, currentCell, graveRow, currentLocation);
+        List<Vertex> path = PathFindingUtils.findPath(edges, currentCell, graveRow, currentLocation);
+        if (path.isEmpty()) {
+            throw BadRequestException.message("Không tìm được đường đi");
+        }
+        return path;
     }
 
     @Override
@@ -85,13 +90,22 @@ public class PathFindingServiceImpl implements PathFindingService {
                 .map(vertex -> List.of(vertex.getLongitude(), vertex.getLatitude()))
                 .toList();
 
+        // Create list of vertex IDs
+        List<Long> vertexIds = savedVertices.stream()
+                .map(Vertex::getId)
+                .toList();
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("pathId", path.getId());
+        properties.put("vertexIds", vertexIds);
+
         PathGeoJsonResponse.Feature feature = PathGeoJsonResponse.Feature.builder()
                 .type("Feature")
                 .geometry(PathGeoJsonResponse.Geometry.builder()
                         .type("LineString")
                         .coordinates(coordinates)
                         .build())
-                .properties(Map.of("pathId", path.getId()))
+                .properties(properties)
                 .build();
 
         return PathGeoJsonResponse.builder()
