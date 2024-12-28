@@ -1,24 +1,15 @@
 package org.dongthap.lietsi.util;
 
-import static org.dongthap.lietsi.constant.GridConstants.GRID_SIZE;
-import static org.dongthap.lietsi.constant.GridConstants.NE_LAT;
-import static org.dongthap.lietsi.constant.GridConstants.NE_LNG;
-import static org.dongthap.lietsi.constant.GridConstants.NW_LAT;
-import static org.dongthap.lietsi.constant.GridConstants.NW_LNG;
-import static org.dongthap.lietsi.constant.GridConstants.SE_LAT;
-import static org.dongthap.lietsi.constant.GridConstants.SE_LNG;
-import static org.dongthap.lietsi.constant.GridConstants.SW_LAT;
-import static org.dongthap.lietsi.constant.GridConstants.SW_LNG;
-
-import java.util.*;
-
+import lombok.experimental.UtilityClass;
 import org.dongthap.lietsi.model.dto.path.CurrentLocation;
 import org.dongthap.lietsi.model.entity.Cell;
 import org.dongthap.lietsi.model.entity.Edge;
 import org.dongthap.lietsi.model.entity.GraveRow;
 import org.dongthap.lietsi.model.entity.Vertex;
 
-import lombok.experimental.UtilityClass;
+import java.util.*;
+
+import static org.dongthap.lietsi.constant.GridConstants.*;
 
 @UtilityClass
 public class PathFindingUtils {

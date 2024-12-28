@@ -1,8 +1,6 @@
 package org.dongthap.lietsi.service.auth;
 
-import java.time.LocalDateTime;
-import java.util.Random;
-
+import lombok.RequiredArgsConstructor;
 import org.dongthap.lietsi.exception.BadRequestException;
 import org.dongthap.lietsi.exception.UnauthorizedException;
 import org.dongthap.lietsi.model.dto.auth.LoginRequest;
@@ -23,7 +21,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor

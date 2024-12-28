@@ -1,15 +1,14 @@
 package org.dongthap.lietsi.model.entity;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import jakarta.persistence.*;
-import org.dongthap.lietsi.model.enums.LogAction;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.dongthap.lietsi.model.enums.LogAction;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder

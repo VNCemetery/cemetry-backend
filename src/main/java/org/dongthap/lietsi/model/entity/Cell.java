@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.Fetch;
 
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @Builder
