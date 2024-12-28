@@ -10,13 +10,7 @@ import static org.dongthap.lietsi.constant.GridConstants.SE_LNG;
 import static org.dongthap.lietsi.constant.GridConstants.SW_LAT;
 import static org.dongthap.lietsi.constant.GridConstants.SW_LNG;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.PriorityQueue;
+import java.util.*;
 
 import org.dongthap.lietsi.model.dto.path.CurrentLocation;
 import org.dongthap.lietsi.model.entity.Cell;
@@ -31,6 +25,20 @@ public class PathFindingUtils {
     private static final double EARTH_RADIUS = 6371; // km
     private static final Map<String, Double> distanceCache = new HashMap<>();
 
+    // Add grid distance calculation in initialization
+    private static double gridHorizontalDistance;
+    private static double gridVerticalDistance;
+    private static double gridLatitudeDistance;
+    private static double gridLongitudeDistance;
+
+    static {
+        // Pre-calculate grid distances once
+        gridHorizontalDistance = getCachedHaversine(NW_LAT, NW_LNG, NE_LAT, NE_LNG);
+        gridVerticalDistance = getCachedHaversine(NW_LAT, NW_LNG, SW_LAT, SW_LNG);
+        gridLatitudeDistance = gridVerticalDistance / GRID_SIZE;
+        gridLongitudeDistance = gridHorizontalDistance / GRID_SIZE;
+    }
+
     public static Optional<Long> getCurrentCellId(CurrentLocation currentLocation) {
         if (currentLocation == null || currentLocation.getLatitude() == null ||
                 currentLocation.getLongitude() == null) {
@@ -44,24 +52,25 @@ public class PathFindingUtils {
             return Optional.empty();
         }
 
-        // Pre-calculate distances
-        double horizontalDistance = getCachedHaversine(NW_LAT, NW_LNG, NE_LAT, NE_LNG);
-        double verticalDistance = getCachedHaversine(NW_LAT, NW_LNG, SW_LAT, SW_LNG);
-        double latitudeDistance = verticalDistance / GRID_SIZE;
-        double longitudeDistance = horizontalDistance / GRID_SIZE;
-
+        // Calculate distances similar to C++ code
         double c = getCachedHaversine(NW_LAT, NW_LNG, latitude, longitude);
         double d = getCachedHaversine(NE_LAT, NE_LNG, latitude, longitude);
 
-        double cosAlpha = (horizontalDistance * horizontalDistance + c * c - d * d) /
-                (2 * horizontalDistance * c);
-        double colDistance = c * cosAlpha;
-        double rowDistance = c * Math.sqrt(1 - cosAlpha * cosAlpha);
+        double cosX = (gridHorizontalDistance * gridHorizontalDistance + c * c - d * d) /
+                (2 * gridHorizontalDistance * c);
+        double disCol = c * cosX;
+        double sinX = Math.sqrt(1 - cosX * cosX);
+        double disRow = c * sinX;
 
-        int rowId = (int) Math.ceil(rowDistance / latitudeDistance);
-        int colId = (int) Math.ceil(colDistance / longitudeDistance);
+        int rowId = (int) Math.ceil(disRow / gridLatitudeDistance);
+        int colId = (int) Math.ceil(disCol / gridLongitudeDistance);
 
-        return Optional.of((long) (rowId - 1) * GRID_SIZE + colId);
+        // Validate cell bounds like in C++
+        if (colId < 1 || colId > GRID_SIZE || rowId < 1 || rowId > GRID_SIZE) {
+            return Optional.empty();
+        }
+
+        return Optional.of((long) ((rowId - 1) * GRID_SIZE + colId));
     }
 
     private static double getCachedHaversine(double lat1, double lon1, double lat2, double lon2) {
@@ -99,6 +108,9 @@ public class PathFindingUtils {
 
         // Find shortest path to both possible destinations
         List<Vertex> path1 = dijkstra(adjacencyList, recommendVertex, graveRow.getVertex1());
+        if (Objects.equals(graveRow.getVertex1().getId(), graveRow.getVertex2().getId())) {
+            return path1;
+        }
         List<Vertex> path2 = dijkstra(adjacencyList, recommendVertex, graveRow.getVertex2());
 
         // Choose shorter path
@@ -119,6 +131,9 @@ public class PathFindingUtils {
 
     private static List<Vertex> dijkstra(Map<Vertex, List<Edge>> adjacencyList,
                                          Vertex start, Vertex end) {
+        // Add distance to start vertex calculation
+        double initialDistance = calculateDistance(start, end);
+
         Map<Vertex, DijkstraNode> nodeMap = new HashMap<>();
         PriorityQueue<DijkstraNode> queue = new PriorityQueue<>();
 

@@ -3,8 +3,10 @@ package org.dongthap.lietsi.model.dto.path;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -14,6 +16,8 @@ public class PathGeoJsonResponse {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Feature {
         private String type;
         private Geometry geometry;
