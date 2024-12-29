@@ -1,12 +1,12 @@
 package org.dongthap.lietsi.config;
 
-import java.io.IOException;
-import java.io.Serial;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.io.Serial;
 
 public class StringWithoutSpaceDeserializer extends StdDeserializer<String> {
     /**

@@ -1,17 +1,5 @@
 package org.dongthap.lietsi.controller.auth;
 
-import org.dongthap.lietsi.model.dto.auth.ForgotPasswordRequest;
-import org.dongthap.lietsi.model.dto.auth.LoginRequest;
-import org.dongthap.lietsi.model.dto.auth.LoginResponse;
-import org.dongthap.lietsi.model.dto.auth.RefreshTokenRequest;
-import org.dongthap.lietsi.model.dto.auth.ResetPasswordRequest;
-import org.dongthap.lietsi.service.auth.AuthenticationService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -22,6 +10,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.dongthap.lietsi.model.dto.auth.*;
+import org.dongthap.lietsi.service.auth.AuthenticationService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authentication", description = "APIs for authentication including login, logout, and password management")
 @RestController

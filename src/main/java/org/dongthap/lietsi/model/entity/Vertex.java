@@ -1,19 +1,10 @@
 package org.dongthap.lietsi.model.entity;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.locationtech.jts.geom.Point;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import org.dongthap.lietsi.util.GeometryUtils;
+import org.locationtech.jts.geom.Point;
 
 @Data
 @Builder

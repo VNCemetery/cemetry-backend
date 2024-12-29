@@ -1,9 +1,8 @@
 package org.dongthap.lietsi.repository.specification;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
+import jakarta.persistence.criteria.*;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.dongthap.lietsi.model.dto.search.FilterRequest;
 import org.dongthap.lietsi.model.dto.search.SearchRequest;
 import org.dongthap.lietsi.model.dto.search.SortRequest;
@@ -11,13 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @AllArgsConstructor

@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.dongthap.lietsi.model.entity.common.BaseEntity;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
-import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data

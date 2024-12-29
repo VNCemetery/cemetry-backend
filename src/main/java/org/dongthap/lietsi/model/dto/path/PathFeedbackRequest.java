@@ -1,10 +1,10 @@
 package org.dongthap.lietsi.model.dto.path;
 
-import java.util.UUID;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.UUID;
 
 @Data
 @Schema(description = "Request object for path feedback")
