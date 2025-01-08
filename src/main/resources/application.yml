@@ -59,10 +59,10 @@ application:
     refreshToken:
       expiration: 2592000
 
-springdoc:
-  swagger-ui:
-    operations-sorter: method
-    path: /
+# springdoc:
+#   swagger-ui:
+#     operations-sorter: method
+#     path: /
 
 postgis:
   force-axis-order: true
