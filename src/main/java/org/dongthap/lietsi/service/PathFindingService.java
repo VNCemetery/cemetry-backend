@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface PathFindingService {
     List<Vertex> findPath(PathFindingRequest pathFindingRequest);
     PathGeoJsonResponse findPathGeoJson(PathFindingRequest pathFindingRequest);
+    PathGeoJsonResponse getPathById(UUID pathId);
     void provideFeedback(UUID pathId, boolean isGood);
 }

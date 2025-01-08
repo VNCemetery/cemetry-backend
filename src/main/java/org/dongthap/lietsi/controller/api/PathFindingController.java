@@ -8,15 +8,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.UUID;
+
 import org.dongthap.lietsi.model.dto.path.PathFeedbackRequest;
 import org.dongthap.lietsi.model.dto.path.PathFindingRequest;
 import org.dongthap.lietsi.model.dto.path.PathGeoJsonResponse;
 import org.dongthap.lietsi.service.PathFindingService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/path-finding")
@@ -39,6 +39,21 @@ public class PathFindingController {
     @PostMapping
     public ResponseEntity<PathGeoJsonResponse> pathFinding(@Valid @RequestBody PathFindingRequest pathFindingRequest) {
         return ResponseEntity.ok(pathFindingService.findPathGeoJson(pathFindingRequest));
+    }
+
+    @Operation(
+        summary = "Get path by ID",
+        description = "Returns a GeoJSON object representing the path with the specified ID"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully found path",
+            content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = PathGeoJsonResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Path not found")
+    })
+    @GetMapping("/{pathId}")
+    public ResponseEntity<PathGeoJsonResponse> getPath(@PathVariable("pathId") UUID pathId) {
+        return ResponseEntity.ok().body(pathFindingService.getPathById(pathId));
     }
 
     @Operation(

@@ -10,6 +10,7 @@ import org.dongthap.lietsi.repository.GraveRowRepository;
 import org.dongthap.lietsi.repository.PathRepository;
 import org.dongthap.lietsi.repository.VertexRepository;
 import org.dongthap.lietsi.service.PathFindingService;
+import org.dongthap.lietsi.util.GeometryUtils;
 import org.dongthap.lietsi.util.PathFindingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,64 +53,47 @@ public class PathFindingServiceImpl implements PathFindingService {
     @Override
     public PathGeoJsonResponse findPathGeoJson(PathFindingRequest pathFindingRequest) {
         List<Vertex> vertices = findPath(pathFindingRequest);
-        
+
         // Handle transient vertices
         List<Vertex> savedVertices = new ArrayList<>();
         for (Vertex vertex : vertices) {
             if (vertex.getId() == null) {
                 // For transient vertices (like current location), first try to find existing one
                 Optional<Vertex> existingVertex = vertexRepository.findByLatitudeAndLongitude(
-                    vertex.getLatitude(), 
-                    vertex.getLongitude()
+                        vertex.getLatitude(),
+                        vertex.getLongitude()
                 );
-                
+
                 // If not found, save as new vertex
                 savedVertices.add(existingVertex.orElseGet(() -> vertexRepository.save(vertex)));
             } else {
                 savedVertices.add(vertex);
             }
         }
-        
+
         // Save the path with saved vertices
         Path path = Path.builder()
                 .vertices(savedVertices)
                 .isGood(null) // Initially null until feedback is received
                 .build();
         path = pathRepository.save(path);
-        
-        List<List<Double>> coordinates = savedVertices.stream()
-                .map(vertex -> List.of(vertex.getLongitude(), vertex.getLatitude()))
-                .toList();
 
-        // Create list of vertex IDs
-        List<Long> vertexIds = savedVertices.stream()
-                .map(Vertex::getId)
-                .toList();
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("pathId", path.getId());
-        properties.put("vertexIds", vertexIds);
-
-        PathGeoJsonResponse.Feature feature = PathGeoJsonResponse.Feature.builder()
-                .type("Feature")
-                .geometry(PathGeoJsonResponse.Geometry.builder()
-                        .type("LineString")
-                        .coordinates(coordinates)
-                        .build())
-                .properties(properties)
-                .build();
-
-        return PathGeoJsonResponse.builder()
-                .type("FeatureCollection")
-                .features(List.of(feature))
-                .build();
+        return GeometryUtils.buildGeoJsonWithPath(path);
     }
 
     @Override
     public void provideFeedback(UUID pathId, boolean isGood) {
         Path path = pathRepository.findById(pathId)
-                .orElseThrow(() -> BadRequestException.message("Path not found"));
+                .orElseThrow(() -> BadRequestException.message("Không tìm thấy đường đi"));
         path.setIsGood(isGood);
         pathRepository.save(path);
+    }
+
+    @Override
+    public PathGeoJsonResponse getPathById(UUID pathId) {
+        Path path = pathRepository.findById(pathId)
+                .orElseThrow(() -> BadRequestException.message("Không tìm thấy đường đi"));
+
+        return GeometryUtils.buildGeoJsonWithPath(path);
     }
 }
