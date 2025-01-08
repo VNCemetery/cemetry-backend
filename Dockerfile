@@ -1,20 +1,12 @@
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:17-jdk-alpine
-
-# Install Maven
-RUN apk add --no-cache maven
-
-# Set the working directory in the container
+# Build stage
+FROM maven:3.8.3-openjdk-17-slim AS build
 WORKDIR /app
-
-# Copy the project files to the container
 COPY . .
+RUN mvn clean package -DskipTests
 
-# Package the application using Maven
-RUN mvn package
-
-# Expose the port the application runs on
+# Run stage
+FROM openjdk:17-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/weblietsi-backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-
-# Run the application
-CMD ["java", "-jar", "target/weblietsi-backend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
