@@ -12,6 +12,15 @@
 6. Chạy lệnh `docker-compose --env-file .env up -d --build` để khởi chạy project
 7. Truy cập vào `http://localhost:8000/swagger-ui/index.html` để xem tài liệu về API
 
+
+### SSL
+
+```bash
+openssl pkcs12 -export -in ssl/ssl.cert -inkey ssl/ssl.key \
+  -out ssl/keystore.p12 -name your-cert-alias \
+  -password pass:your-keystore-password
+```
+
 ### Cài đặt cho môi trường production
 
 - Đang chờ cập nhật
