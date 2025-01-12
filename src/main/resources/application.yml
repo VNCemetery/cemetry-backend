@@ -50,7 +50,17 @@ logging:
     root: INFO
 
 server:
-  port: 8080
+  http:
+    port: 8080
+  port: 8443
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store: ${SSL_KEYSTORE}
+    key-store-password: ${SSL_PASSWORD}
+    key-alias: ${SSL_ALIAS}
+  http2:
+    enabled: true
 
 application:
   jwt:
@@ -59,10 +69,10 @@ application:
     refreshToken:
       expiration: 2592000
 
-# springdoc:
-#   swagger-ui:
-#     operations-sorter: method
-#     path: /
+springdoc:
+ swagger-ui:
+   operations-sorter: method
+   path: /
 
 postgis:
   force-axis-order: true

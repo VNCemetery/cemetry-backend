@@ -5,7 +5,8 @@ services:
     container_name: lietsi-backend
     restart: always
     ports:
-      - "8080:8080"
+      - "8080:8080"   # HTTP port
+      - "8443:8443"   # HTTPS port
     networks:
       - lietsi-postgres-net
     depends_on:
@@ -19,6 +20,16 @@ services:
       MAIL_PORT: ${MAIL_PORT}
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SSL_KEYSTORE: /app/ssl/keystore.p12
+      SSL_PASSWORD: ${SSL_PASSWORD}
+      SSL_ALIAS: ${SSL_ALIAS}
+      SERVER_SSL_KEY_STORE: ${SSL_KEYSTORE}
+      SERVER_SSL_KEY_STORE_PASSWORD: ${SSL_PASSWORD}
+      SERVER_SSL_KEY_ALIAS: ${SSL_ALIAS}
+      SERVER_HTTP_PORT: '8080'
+      SERVER_PORT: '8443'
+    volumes:
+      - ./ssl:/app/ssl
 
   postgis:
     image: postgis/postgis:15-3.3

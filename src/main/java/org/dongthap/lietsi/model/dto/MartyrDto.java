@@ -6,8 +6,8 @@ import lombok.*;
 import java.util.UUID;
 
 @Schema(
-    description = "Represents detailed information about a martyr",
-    title = "Martyr Details"
+        description = "Represents detailed information about a martyr",
+        title = "Martyr Details"
 )
 @Data
 @Getter
@@ -17,23 +17,25 @@ import java.util.UUID;
 @AllArgsConstructor
 public class MartyrDto {
     @Schema(
-        description = "Unique identifier of the martyr",
-        example = "123e4567-e89b-12d3-a456-426614174000",
-        requiredMode = Schema.RequiredMode.REQUIRED
+            description = "Unique identifier of the martyr",
+            example = "123e4567-e89b-12d3-a456-426614174000",
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
     private UUID id;
 
     @Schema(
-        description = "Name of the cemetery area where the martyr is buried",
-        example = "Area A - South Section",
-        requiredMode = Schema.RequiredMode.REQUIRED
+            description = "Name of the cemetery area where the martyr is buried",
+            example = "Area A - South Section",
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String areaName;
 
+    private String graveCode;
+
     @Schema(
-        description = "Row identifier within the cemetery area",
-        example = "Row 1-B",
-        requiredMode = Schema.RequiredMode.REQUIRED
+            description = "Row identifier within the cemetery area",
+            example = "Row 1-B",
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String rowName;
 
@@ -41,9 +43,9 @@ public class MartyrDto {
     private String image;
 
     @Schema(
-        description = "Full formal name of the martyr",
-        example = "Nguyen Van Anh",
-        requiredMode = Schema.RequiredMode.REQUIRED
+            description = "Full formal name of the martyr",
+            example = "Nguyen Van Anh",
+            requiredMode = Schema.RequiredMode.REQUIRED
     )
     private String fullName;
 
