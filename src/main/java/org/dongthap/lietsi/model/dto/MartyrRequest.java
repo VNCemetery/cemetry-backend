@@ -21,6 +21,8 @@ public class MartyrRequest {
     @Schema(description = "Image URL/path", example = "martyrs/image1.jpg")
     private String image;
 
+    private String graveCode;
+
     @Schema(description = "Full name of the martyr", example = "Nguyen Van A")
     @NotBlank(message = "Full name is required")
     private String fullName;

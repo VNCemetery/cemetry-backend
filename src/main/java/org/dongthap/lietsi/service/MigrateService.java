@@ -2,6 +2,7 @@ package org.dongthap.lietsi.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ public class MigrateService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final DataFormatter formatter;
+    private final EntityManager entityManager;
 
     private long nextGraveRowId = 1000; // Start from 1000 to avoid conflicts with existing IDs
 
@@ -46,6 +48,14 @@ public class MigrateService {
         migrateCells();
         migrateGraveRows();
         migrateMartyr();
+    }
+
+    @Transactional
+    public void setupPostgisExtensions() {
+        log.info("Setting up PostGIS extensions...");
+        entityManager.createNativeQuery("CREATE EXTENSION IF NOT EXISTS postgis").executeUpdate();
+        entityManager.createNativeQuery("CREATE EXTENSION IF NOT EXISTS postgis_topology").executeUpdate();
+        log.info("PostGIS extensions setup completed");
     }
 
     @Transactional
@@ -275,7 +285,7 @@ public class MigrateService {
                     String codeName = StringUtils.trimToEmpty(formatter.formatCellValue(row.getCell(5)));
                     martyrGrave = MartyrGrave.builder()
                             .graveRow(graveRow)
-//                            .id((long) row.getCell(2).getNumericCellValue())
+                            .graveCode(formatter.formatCellValue(row.getCell(2)))
                             .fullName(fullName)
                             .name(name)
                             .codeName(codeName)

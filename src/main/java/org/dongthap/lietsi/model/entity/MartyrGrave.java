@@ -18,12 +18,16 @@ import java.util.UUID;
 @Table(name = "martyr_graves", indexes = {
         @Index(name = "index_martyr_graves_full_name", columnList = "full_name"),
         @Index(name = "index_martyr_graves_name", columnList = "name"),
-        @Index(name = "index_martyr_graves_code_name", columnList = "code_name")
+        @Index(name = "index_martyr_graves_code_name", columnList = "code_name"),
+        @Index(name = "index_grave_code", columnList = "grave_code"),
 })
 public class MartyrGrave extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+    @Column(name = "grave_code")
+    private String graveCode;
 
     @Column(name = "image")
     private String image;
